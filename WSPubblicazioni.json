@@ -1,0 +1,1174 @@
+{
+  "swagger" : "2.0",
+  "info" : {
+    "description" : "Servizio di pubblicazione atti e documenti ex. art 29 ed ex. 73 del DLgs 50/2016",
+    "version" : "5.3.0",
+    "title" : "WSPubblicazioni"
+  },
+  "tags" : [ {
+    "name" : "Anagrafiche"
+  }, {
+    "name" : "Atti"
+  }, {
+    "name" : "Avvisi"
+  } ],
+  "paths" : {
+    "/Anagrafiche/DettaglioGara" : {
+      "get" : {
+        "tags" : [ "Anagrafiche" ],
+        "summary" : "Estrae il dettaglio di una gara in base all'id passato come parametro",
+        "description" : "",
+        "operationId" : "AnagraficheRestService.dettaglioGara",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "idRicevuto",
+          "in" : "query",
+          "description" : "Identificativo univoco SCP - IdRicevuto",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "token",
+          "in" : "query",
+          "description" : "Token",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Operazione effettuata con successo",
+            "schema" : {
+              "$ref" : "#/definitions/DettaglioGaraResult"
+            }
+          },
+          "401" : {
+            "description" : "Non si possiedono le credenziali per questa gara (si veda l'attributo error della risposta)"
+          },
+          "404" : {
+            "description" : "La gara richiesta non è stata trovata (si veda l'attributo error della risposta)"
+          },
+          "500" : {
+            "description" : "Errori durante l'esecuzione dell'operazione (si veda l'attributo error della risposta)"
+          }
+        }
+      }
+    },
+    "/Anagrafiche/GaraLotti" : {
+      "post" : {
+        "tags" : [ "Anagrafiche" ],
+        "summary" : "Salva l'anagrafica della gara e dei lotti",
+        "description" : "Ritorna il risultato del salvataggio e l'id assegnato dal sistema, che dovrà essere riutilizzato per successivi aggiornamenti",
+        "operationId" : "AnagraficheRestService.garaLotti",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Gara da salvare [Model=PubblicaGaraEntry]",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/PubblicaGaraEntry"
+          }
+        }, {
+          "name" : "modalitaInvio",
+          "in" : "query",
+          "description" : "Se valorizzato a '1' effettua solo il controllo dei dati, '2' effettua controllo e salvataggio",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "token",
+          "in" : "query",
+          "description" : "Token",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Operazione effettuata con successo",
+            "schema" : {
+              "$ref" : "#/definitions/PubblicazioneResult"
+            }
+          },
+          "400" : {
+            "description" : "Controlli falliti sui parametri in input (si veda l'attributo error della risposta)"
+          },
+          "500" : {
+            "description" : "Errori durante l'esecuzione dell'operazione (si veda l'attributo error della risposta)"
+          }
+        }
+      }
+    },
+    "/Atti/DettaglioAtto" : {
+      "get" : {
+        "tags" : [ "Atti" ],
+        "summary" : "Estrae il dettaglio di un atto in base all'id passato come parametro",
+        "description" : "",
+        "operationId" : "AttiRestService.dettaglioAtto",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "idRicevuto",
+          "in" : "query",
+          "description" : "Identificativo univoco SCP - IdRicevuto",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "token",
+          "in" : "query",
+          "description" : "Token",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Operazione effettuata con successo",
+            "schema" : {
+              "$ref" : "#/definitions/DettaglioAttoResult"
+            }
+          },
+          "401" : {
+            "description" : "Non si possiedono le credenziali per questo atto (si veda l'attributo error della risposta)"
+          },
+          "404" : {
+            "description" : "L'atto richiesto non è stato trovato (si veda l'attributo error della risposta)"
+          },
+          "500" : {
+            "description" : "Errori durante l'esecuzione dell'operazione (si veda l'attributo error della risposta)"
+          }
+        }
+      }
+    },
+    "/Atti/Pubblica" : {
+      "post" : {
+        "tags" : [ "Atti" ],
+        "summary" : "Pubblica i dati e i documenti relativi ad Atti Ex Art.29",
+        "description" : "Ritorna il risultato della pubblicazione e l'id assegnato dal sistema, che dovrà essere riutilizzato per successive pubblicazioni",
+        "operationId" : "AttiRestService.pubblica",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Atti Ex Art.29 da pubblicare [Model=PubblicaAttoEntry]",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/PubblicaAttoEntry"
+          }
+        }, {
+          "name" : "modalitaInvio",
+          "in" : "query",
+          "description" : "Se valorizzato a '1' effettua solo il controllo dei dati, '2' effettua controllo e pubblicazione",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "token",
+          "in" : "query",
+          "description" : "Token",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Operazione effettuata con successo",
+            "schema" : {
+              "$ref" : "#/definitions/PubblicazioneAttoResult"
+            }
+          },
+          "400" : {
+            "description" : "Controlli falliti sui parametri in input (si veda l'attributo error della risposta)"
+          },
+          "500" : {
+            "description" : "Errori durante l'esecuzione dell'operazione (si veda l'attributo error della risposta)"
+          }
+        }
+      }
+    },
+    "/Atti/Tipologie" : {
+      "get" : {
+        "tags" : [ "Atti" ],
+        "summary" : "Metodo di servizio per recuperare i campi obbligatori per il Tipo di Atto",
+        "description" : "",
+        "operationId" : "AttiRestService.tipologie",
+        "consumes" : [ "application/x-www-form-urlencoded" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "token",
+          "in" : "query",
+          "description" : "Token",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Operazione effettuata con successo",
+            "schema" : {
+              "$ref" : "#/definitions/TipoAttoResult"
+            }
+          },
+          "404" : {
+            "description" : "Il dettaglio richiesto non è stato trovato (si veda l'attributo error della risposta)"
+          },
+          "500" : {
+            "description" : "Errori durante l'esecuzione dell'operazione (si veda l'attributo error della risposta)"
+          }
+        }
+      }
+    },
+    "/Atti/Version" : {
+      "get" : {
+        "tags" : [ "Atti" ],
+        "summary" : "Metodo che ritorna la versione del servizio",
+        "description" : "",
+        "operationId" : "AttiRestService.version",
+        "responses" : {
+          "200" : {
+            "description" : "successful operation",
+            "schema" : {
+              "type" : "string"
+            }
+          }
+        }
+      }
+    },
+    "/Avvisi/DettaglioAvviso" : {
+      "get" : {
+        "tags" : [ "Avvisi" ],
+        "summary" : "Estrae il dettaglio di un avviso in base all'id passato come parametro",
+        "description" : "",
+        "operationId" : "AvvisiRestService.dettaglioAvviso",
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "name" : "idRicevuto",
+          "in" : "query",
+          "description" : "Identificativo univoco SCP - IdRicevuto",
+          "required" : true,
+          "type" : "integer",
+          "format" : "int64"
+        }, {
+          "name" : "token",
+          "in" : "query",
+          "description" : "Token",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Operazione effettuata con successo",
+            "schema" : {
+              "$ref" : "#/definitions/DettaglioAvvisoResult"
+            }
+          },
+          "401" : {
+            "description" : "Non si possiedono le credenziali per questo avviso (si veda l'attributo error della risposta)"
+          },
+          "404" : {
+            "description" : "L'avviso richiesto non è stata trovato (si veda l'attributo error della risposta)"
+          },
+          "500" : {
+            "description" : "Errori durante l'esecuzione dell'operazione (si veda l'attributo error della risposta)"
+          }
+        }
+      }
+    },
+    "/Avvisi/Pubblica" : {
+      "post" : {
+        "tags" : [ "Avvisi" ],
+        "summary" : "Pubblica i dati e i documenti relativi ad un'avviso",
+        "description" : "Ritorna il risultato della pubblicazione e l'id assegnato dal sistema, che dovrà essere riutilizzato per successive pubblicazioni",
+        "operationId" : "AvvisiRestService.pubblica",
+        "consumes" : [ "application/json" ],
+        "produces" : [ "application/json" ],
+        "parameters" : [ {
+          "in" : "body",
+          "name" : "body",
+          "description" : "Avviso da pubblicare [Model=PubblicaAvvisoEntry]",
+          "required" : true,
+          "schema" : {
+            "$ref" : "#/definitions/PubblicaAvvisoEntry"
+          }
+        }, {
+          "name" : "modalitaInvio",
+          "in" : "query",
+          "description" : "Se valorizzato a '1' effettua solo il controllo dei dati, '2' effettua controllo e pubblicazione",
+          "required" : true,
+          "type" : "string"
+        }, {
+          "name" : "token",
+          "in" : "query",
+          "description" : "Token",
+          "required" : true,
+          "type" : "string"
+        } ],
+        "responses" : {
+          "200" : {
+            "description" : "Operazione effettuata con successo",
+            "schema" : {
+              "$ref" : "#/definitions/PubblicazioneResult"
+            }
+          },
+          "400" : {
+            "description" : "Controlli falliti sui parametri in input (si veda l'attributo error della risposta)"
+          },
+          "500" : {
+            "description" : "Errori durante l'esecuzione dell'operazione (si veda l'attributo error della risposta)"
+          }
+        }
+      }
+    }
+  },
+  "definitions" : {
+    "AggiudicatarioEntry" : {
+      "type" : "object",
+      "required" : [ "impresa", "tipoAggiudicatario" ],
+      "properties" : {
+        "tipoAggiudicatario" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Tipologia del soggetto aggiudicatario (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=TipologiaAggiudicatario)"
+        },
+        "ruolo" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Ruolo nell'associazione (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=RuoloAssociazione)"
+        },
+        "impresa" : {
+          "description" : "Dati dell'Operatore economico",
+          "$ref" : "#/definitions/ImpresaEntry"
+        },
+        "idGruppo" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Numero raggruppamento"
+        }
+      },
+      "description" : "Dati relativi ad un aggiudicatario"
+    },
+    "AllegatoAttiEntry" : {
+      "type" : "object",
+      "required" : [ "titolo" ],
+      "properties" : {
+        "titolo" : {
+          "type" : "string",
+          "description" : "Titolo del documento",
+          "minLength" : 1,
+          "maxLength" : 250
+        },
+        "url" : {
+          "type" : "string",
+          "description" : "URL documentazione",
+          "minLength" : 0,
+          "maxLength" : 2000
+        }
+      },
+      "description" : "Nome e numero allegato"
+    },
+    "AllegatoAvvisiEntry" : {
+      "type" : "object",
+      "required" : [ "titolo" ],
+      "properties" : {
+        "titolo" : {
+          "type" : "string",
+          "description" : "Titolo del documento",
+          "minLength" : 1,
+          "maxLength" : 250
+        },
+        "url" : {
+          "type" : "string",
+          "description" : "URL documentazione",
+          "minLength" : 0,
+          "maxLength" : 2000
+        }
+      },
+      "description" : "Nome e numero allegato"
+    },
+    "AttoGaraEntry" : {
+      "type" : "object",
+      "properties" : {
+        "tipoDocumento" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Tipologia pubblicazione (/WSTabelleDiContesto/rest/Tabellati/Atti)"
+        },
+        "idRicevuto" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Id univoco generato dal sistema remoto; deve essere utilizzato per le chiamate successive"
+        }
+      },
+      "description" : "Riferimento all'Atto di gara"
+    },
+    "CategoriaLottoEntry" : {
+      "type" : "object",
+      "required" : [ "categoria", "classe", "scorporabile", "subappaltabile" ],
+      "properties" : {
+        "categoria" : {
+          "type" : "string",
+          "description" : "Categoria (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=Categorie)",
+          "minLength" : 0,
+          "maxLength" : 10
+        },
+        "classe" : {
+          "type" : "string",
+          "description" : "Classe importo categoria (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=Classe)",
+          "minLength" : 0,
+          "maxLength" : 5
+        },
+        "scorporabile" : {
+          "type" : "string",
+          "description" : "Categoria scorporabile? (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=SN)",
+          "minLength" : 0,
+          "maxLength" : 1
+        },
+        "subappaltabile" : {
+          "type" : "string",
+          "description" : "Categoria subappaltabile? (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=SN)",
+          "minLength" : 0,
+          "maxLength" : 1
+        }
+      },
+      "description" : "Categoria del lotto"
+    },
+    "CpvLottoEntry" : {
+      "type" : "object",
+      "required" : [ "cpv" ],
+      "properties" : {
+        "cpv" : {
+          "type" : "string",
+          "description" : "Codice CPV secondario",
+          "minLength" : 0,
+          "maxLength" : 12
+        }
+      },
+      "description" : "Categoria CPV del lotto"
+    },
+    "DatiGeneraliTecnicoEntry" : {
+      "type" : "object",
+      "required" : [ "cfPiva", "cognome", "nome" ],
+      "properties" : {
+        "cognome" : {
+          "type" : "string",
+          "description" : "Cognome del tecnico",
+          "minLength" : 1,
+          "maxLength" : 80
+        },
+        "nome" : {
+          "type" : "string",
+          "description" : "Nome del tecnico",
+          "minLength" : 1,
+          "maxLength" : 80
+        },
+        "indirizzo" : {
+          "type" : "string",
+          "description" : "Indirizzo (via/piazza/corso)",
+          "minLength" : 0,
+          "maxLength" : 60
+        },
+        "civico" : {
+          "type" : "string",
+          "description" : "Numero civico",
+          "minLength" : 0,
+          "maxLength" : 10
+        },
+        "provincia" : {
+          "type" : "string",
+          "description" : "Provincia di residenza (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=Provincia)",
+          "minLength" : 0,
+          "maxLength" : 2
+        },
+        "cap" : {
+          "type" : "string",
+          "description" : "Codice di avviamento postale",
+          "minLength" : 0,
+          "maxLength" : 5
+        },
+        "luogoIstat" : {
+          "type" : "string",
+          "description" : "Codice ISTAT del Comune luogo di esecuzione del contratto",
+          "minLength" : 0,
+          "maxLength" : 9
+        },
+        "cfPiva" : {
+          "type" : "string",
+          "description" : "Codice fiscale",
+          "minLength" : 11,
+          "maxLength" : 16
+        }
+      },
+      "description" : "Contenitore per i dati generali del soggetto"
+    },
+    "DettaglioAttoResult" : {
+      "type" : "object",
+      "properties" : {
+        "error" : {
+          "type" : "string",
+          "description" : "Eventuale messaggio di errore in caso di operazione fallita"
+        },
+        "atto" : {
+          "description" : "Dettaglio dell'atto",
+          "$ref" : "#/definitions/PubblicaAttoEntry"
+        }
+      },
+      "description" : "Contenitore per il risultato del dettaglio di un atto"
+    },
+    "DettaglioAvvisoResult" : {
+      "type" : "object",
+      "properties" : {
+        "error" : {
+          "type" : "string",
+          "description" : "Eventuale messaggio di errore in caso di operazione fallita"
+        },
+        "avviso" : {
+          "description" : "Dettaglio dell'avviso",
+          "$ref" : "#/definitions/PubblicaAvvisoEntry"
+        }
+      },
+      "description" : "Contenitore per il risultato del dettaglio di una avviso"
+    },
+    "DettaglioGaraResult" : {
+      "type" : "object",
+      "properties" : {
+        "error" : {
+          "type" : "string",
+          "description" : "Eventuale messaggio di errore in caso di operazione fallita"
+        },
+        "gara" : {
+          "description" : "Dettaglio della gara",
+          "$ref" : "#/definitions/PubblicaGaraEntry"
+        }
+      },
+      "description" : "Contenitore per il risultato del dettaglio di una gara"
+    },
+    "ImpresaEntry" : {
+      "type" : "object",
+      "required" : [ "codiceFiscale", "ragioneSociale" ],
+      "properties" : {
+        "ragioneSociale" : {
+          "type" : "string",
+          "description" : "Ragione sociale dell'impresa",
+          "minLength" : 1,
+          "maxLength" : 61
+        },
+        "formaGiuridica" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Forma giuridica (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=FormaGiuridica)"
+        },
+        "provincia" : {
+          "type" : "string",
+          "description" : "Provincia dell'impresa (/WSTabelleDiContesto/rest/Tabellati/Province)",
+          "minLength" : 0,
+          "maxLength" : 2
+        },
+        "codiceFiscale" : {
+          "type" : "string",
+          "description" : "Codice fiscale",
+          "minLength" : 11,
+          "maxLength" : 16
+        },
+        "partitaIva" : {
+          "type" : "string",
+          "description" : "Partita I.V.A. o V.A.T.",
+          "minLength" : 0,
+          "maxLength" : 16
+        },
+        "nazione" : {
+          "type" : "string",
+          "description" : "Nazionalità (Codice ISO 3166-1 alpha-2)",
+          "minLength" : 0,
+          "maxLength" : 2
+        }
+      },
+      "description" : "Contenitore per i dati generali dell'Operatore economico"
+    },
+    "PubblicaAttoEntry" : {
+      "type" : "object",
+      "required" : [ "documenti", "gara", "tipoDocumento" ],
+      "properties" : {
+        "tipoDocumento" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Tipologia pubblicazione (/WSTabelleDiContesto/rest/Tabellati/Atti)"
+        },
+        "eventualeSpecificazione" : {
+          "type" : "string",
+          "description" : "Eventuale specificazione",
+          "minLength" : 0,
+          "maxLength" : 100
+        },
+        "dataPubblicazione" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Data pubblicazione"
+        },
+        "dataScadenza" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Data scadenza"
+        },
+        "dataDecreto" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Data decreto"
+        },
+        "dataProvvedimento" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Data del provvedimento"
+        },
+        "numeroProvvedimento" : {
+          "type" : "string",
+          "description" : "Numero provvedimento",
+          "minLength" : 0,
+          "maxLength" : 50
+        },
+        "dataStipula" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Data di stipula"
+        },
+        "numeroRepertorio" : {
+          "type" : "string",
+          "description" : "Numero repertorio",
+          "minLength" : 0,
+          "maxLength" : 50
+        },
+        "ribassoAggiudicazione" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Ribasso di aggiudicazione %"
+        },
+        "offertaAumento" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Offerta in aumento %"
+        },
+        "importoAggiudicazione" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Importo di aggiudicazione"
+        },
+        "dataAggiudicazione" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Data di aggiudicazione definitiva"
+        },
+        "urlCommittente" : {
+          "type" : "string",
+          "description" : "URL profilo del committente",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "urlEProcurement" : {
+          "type" : "string",
+          "description" : "URL piattaforma e-procurement di svolgimento gara",
+          "minLength" : 0,
+          "maxLength" : 2000
+        },
+        "primaPubblicazioneSCP" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Data pubblicazione atto su sito SCP (valorizzato solo nel metodo /Atti/DettaglioAtto)"
+        },
+        "ultimaModificaSCP" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Utima modifica pubblicazione atto su sito SCP (valorizzato solo nel metodo /Atti/DettaglioAtto)"
+        },
+        "documenti" : {
+          "type" : "array",
+          "description" : "Documenti allegati alla pubblicazione",
+          "items" : {
+            "$ref" : "#/definitions/AllegatoAttiEntry"
+          },
+          "maxItems" : 2147483647,
+          "minItems" : 1
+        },
+        "gara" : {
+          "description" : "Dati gara da pubblicare",
+          "$ref" : "#/definitions/PubblicaGaraEntry"
+        },
+        "aggiudicatari" : {
+          "type" : "array",
+          "description" : "Aggiudicatari obbligatori solo per Avviso di aggiudicazione o affidamento",
+          "items" : {
+            "$ref" : "#/definitions/AggiudicatarioEntry"
+          },
+          "maxItems" : 2147483647,
+          "minItems" : 0
+        },
+        "idRicevuto" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Id univoco generato dal sistema remoto; deve essere utilizzato per le chiamate successive"
+        }
+      },
+      "description" : "Contenitore per i dati di pubblicazione di un atto"
+    },
+    "PubblicaAvvisoEntry" : {
+      "type" : "object",
+      "required" : [ "codiceFiscaleSA", "descrizione", "documenti", "rup", "tipologia" ],
+      "properties" : {
+        "codiceFiscaleSA" : {
+          "type" : "string",
+          "description" : "Codice Fiscale Stazione appaltante",
+          "minLength" : 11,
+          "maxLength" : 16
+        },
+        "ufficio" : {
+          "type" : "string",
+          "description" : "Ufficio/area di pertinenza",
+          "minLength" : 0,
+          "maxLength" : 250
+        },
+        "tipologia" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Tipologia avviso (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=TipoAvviso)"
+        },
+        "data" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Data dell'avviso"
+        },
+        "descrizione" : {
+          "type" : "string",
+          "description" : "Descrizione dell'avviso",
+          "minLength" : 1,
+          "maxLength" : 500
+        },
+        "cig" : {
+          "type" : "string",
+          "description" : "CIG",
+          "minLength" : 0,
+          "maxLength" : 10
+        },
+        "cup" : {
+          "type" : "string",
+          "description" : "Codice CUP",
+          "minLength" : 0,
+          "maxLength" : 15
+        },
+        "cui" : {
+          "type" : "string",
+          "description" : "Numero intervento CUI",
+          "minLength" : 0,
+          "maxLength" : 20
+        },
+        "scadenza" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Data scadenza"
+        },
+        "primaPubblicazioneSCP" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Data pubblicazione atto su avviso SCP (valorizzato solo nel metodo /Avvisi/DettaglioAvviso)"
+        },
+        "ultimaModificaSCP" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Utima modifica pubblicazione avviso su sito SCP (valorizzato solo nel metodo /Avvisi/DettaglioAvviso)"
+        },
+        "documenti" : {
+          "type" : "array",
+          "description" : "Documenti allegati alla pubblicazione",
+          "items" : {
+            "$ref" : "#/definitions/AllegatoAvvisiEntry"
+          },
+          "maxItems" : 2147483647,
+          "minItems" : 1
+        },
+        "rup" : {
+          "description" : "Responsabile dell'avviso",
+          "$ref" : "#/definitions/DatiGeneraliTecnicoEntry"
+        },
+        "idRicevuto" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Id univoco generato dal sistema remoto; deve essere utilizzato per le chiamate successive"
+        }
+      },
+      "description" : "Contenitore per i dati di pubblicazione dell'avviso"
+    },
+    "PubblicaGaraEntry" : {
+      "type" : "object",
+      "required" : [ "codiceFiscaleSA", "importoGara", "lotti", "oggetto", "tecnicoRup" ],
+      "properties" : {
+        "oggetto" : {
+          "type" : "string",
+          "description" : "Oggetto - descrizione",
+          "minLength" : 1,
+          "maxLength" : 1024
+        },
+        "idAnac" : {
+          "type" : "string",
+          "description" : "Numero gara ANAC (mettere 0 nel caso di richiesta Smartcig)",
+          "minLength" : 0,
+          "maxLength" : 20
+        },
+        "codiceFiscaleSA" : {
+          "type" : "string",
+          "description" : "Codice Fiscale Stazione appaltante",
+          "minLength" : 11,
+          "maxLength" : 16
+        },
+        "indirizzo" : {
+          "type" : "string",
+          "description" : "Indirizzo sede di gara",
+          "minLength" : 0,
+          "maxLength" : 100
+        },
+        "comune" : {
+          "type" : "string",
+          "description" : "Comune sede di gara",
+          "minLength" : 0,
+          "maxLength" : 32
+        },
+        "provincia" : {
+          "type" : "string",
+          "description" : "Provincia sede di gara (/WSTabelleDiContesto/rest/Tabellati/Province)",
+          "minLength" : 0,
+          "maxLength" : 2
+        },
+        "ufficio" : {
+          "type" : "string",
+          "description" : "Ufficio/area di pertinenza",
+          "minLength" : 0,
+          "maxLength" : 250
+        },
+        "cigAccQuadro" : {
+          "type" : "string",
+          "description" : "CIG accordo quadro/convenzione",
+          "minLength" : 0,
+          "maxLength" : 10
+        },
+        "saAgente" : {
+          "type" : "string",
+          "description" : "La stazione appaltante agisce per conto di altri soggetti? (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=SN)",
+          "minLength" : 0,
+          "maxLength" : 1
+        },
+        "tipoSA" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Tipologia della stazione appaltante (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=TipologiaSA)"
+        },
+        "nomeSA" : {
+          "type" : "string",
+          "description" : "Denominazione del soggetto per cui agisce la S.A.",
+          "minLength" : 0,
+          "maxLength" : 254
+        },
+        "cfAgente" : {
+          "type" : "string",
+          "description" : "Codice fiscale del soggetto per cui agisce la S.A.",
+          "minLength" : 0,
+          "maxLength" : 16
+        },
+        "altreSA" : {
+          "type" : "string",
+          "description" : "Altri soggetti per cui agisce la S.A.",
+          "minLength" : 0,
+          "maxLength" : 500
+        },
+        "tipoProcedura" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Tipologia procedura (nel caso agisca per conto di altri) (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=TipologiaProcedura)"
+        },
+        "centraleCommittenza" : {
+          "type" : "string",
+          "description" : "La centrale di committenza provvede alla stipula? (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=SN)",
+          "minLength" : 0,
+          "maxLength" : 1
+        },
+        "importoGara" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Importo della gara"
+        },
+        "settore" : {
+          "type" : "string",
+          "description" : "Tipo di settore (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=Settore)",
+          "minLength" : 0,
+          "maxLength" : 5
+        },
+        "realizzazione" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Modalità di realizzazione (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=TipoRealizzazione)"
+        },
+        "primaPubblicazioneSCP" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Data pubblicazione gara su sito SCP (valorizzato solo nel metodo /Anagrafiche/DettaglioGara)"
+        },
+        "ultimaModificaSCP" : {
+          "type" : "string",
+          "format" : "date-time",
+          "description" : "Utima modifica pubblicazione gara su sito SCP (valorizzato solo nel metodo /Anagrafiche/DettaglioGara)"
+        },
+        "tecnicoRup" : {
+          "description" : "Responsabile unico procedimento",
+          "$ref" : "#/definitions/DatiGeneraliTecnicoEntry"
+        },
+        "lotti" : {
+          "type" : "array",
+          "description" : "Lista lotti da pubblicare",
+          "items" : {
+            "$ref" : "#/definitions/PubblicaLottoEntry"
+          },
+          "maxItems" : 2147483647,
+          "minItems" : 1
+        },
+        "atti" : {
+          "type" : "array",
+          "description" : "Lista atti della gara (valorizzato solo nel metodo /Anagrafiche/DettaglioGara)",
+          "items" : {
+            "$ref" : "#/definitions/AttoGaraEntry"
+          }
+        },
+        "idRicevuto" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Id univoco generato dal sistema remoto; deve essere utilizzato per le chiamate successive"
+        }
+      },
+      "description" : "Contenitore per i dati di pubblicazione della gara"
+    },
+    "PubblicaLottoEntry" : {
+      "type" : "object",
+      "required" : [ "cig", "importoLotto", "oggetto", "tipoAppalto" ],
+      "properties" : {
+        "oggetto" : {
+          "type" : "string",
+          "description" : "Oggetto del lotto",
+          "minLength" : 1,
+          "maxLength" : 1024
+        },
+        "importoLotto" : {
+          "type" : "number",
+          "format" : "double",
+          "description" : "Importo del lotto"
+        },
+        "numeroLotto" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Numero del lotto della gara"
+        },
+        "cpv" : {
+          "type" : "string",
+          "description" : "Codice CPV",
+          "minLength" : 0,
+          "maxLength" : 12
+        },
+        "idSceltaContraente50" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Procedura di scelta contraente ai sensi del D.lgs. 50/2016 (/Tabellati/Valori?cod=SceltaContraente50)"
+        },
+        "categoria" : {
+          "type" : "string",
+          "description" : "Categoria prevalente (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=Categorie)",
+          "minLength" : 0,
+          "maxLength" : 10
+        },
+        "classe" : {
+          "type" : "string",
+          "description" : "Classe importo categoria prevalente (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=Classe)",
+          "minLength" : 0,
+          "maxLength" : 5
+        },
+        "tipoAppalto" : {
+          "type" : "string",
+          "description" : "Tipo appalto (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=TipoAppalto)",
+          "minLength" : 1,
+          "maxLength" : 5
+        },
+        "criterioAggiudicazione" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Criterio di aggiudicazione (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=CriterioAggiudicazione)"
+        },
+        "luogoIstat" : {
+          "type" : "string",
+          "description" : "Codice ISTAT del Comune luogo di esecuzione del contratto",
+          "minLength" : 0,
+          "maxLength" : 9
+        },
+        "luogoNuts" : {
+          "type" : "string",
+          "description" : "Luogo di esecuzione del contratto - NUTS",
+          "minLength" : 0,
+          "maxLength" : 20
+        },
+        "cig" : {
+          "type" : "string",
+          "description" : "Codice individuazione CIG",
+          "minLength" : 0,
+          "maxLength" : 10
+        },
+        "cupEsente" : {
+          "type" : "string",
+          "description" : "Esente dalla richiesta CUP? (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=SN)",
+          "minLength" : 0,
+          "maxLength" : 1
+        },
+        "cup" : {
+          "type" : "string",
+          "description" : "Codice CUP",
+          "minLength" : 0,
+          "maxLength" : 15
+        },
+        "cui" : {
+          "type" : "string",
+          "description" : "CUI progettazione",
+          "minLength" : 0,
+          "maxLength" : 25
+        },
+        "categorie" : {
+          "type" : "array",
+          "description" : "Categorie del lotto",
+          "items" : {
+            "$ref" : "#/definitions/CategoriaLottoEntry"
+          },
+          "maxItems" : 2147483647,
+          "minItems" : 0
+        },
+        "cpvSecondari" : {
+          "type" : "array",
+          "description" : "Categorie CPV del lotto",
+          "items" : {
+            "$ref" : "#/definitions/CpvLottoEntry"
+          },
+          "maxItems" : 2147483647,
+          "minItems" : 0
+        },
+        "contrattoEsclusoAlleggerito" : {
+          "type" : "string",
+          "description" : "Contratto escluso o rientrante nel regime alleggerito? (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=SN)"
+        },
+        "esclusioneRegimeSpeciale" : {
+          "type" : "string",
+          "description" : "Esclusione o regime speciale? (/WSTabelleDiContesto/rest/Tabellati/Valori?cod=SN)"
+        }
+      },
+      "description" : "Contenitore per i dati di pubblicazione del lotto"
+    },
+    "PubblicazioneAttoResult" : {
+      "type" : "object",
+      "properties" : {
+        "error" : {
+          "type" : "string",
+          "description" : "Eventuale messaggio di errore in caso di operazione fallita"
+        },
+        "validate" : {
+          "type" : "array",
+          "description" : "Eventuale lista dei controlli di validazione che hanno generato errore",
+          "items" : {
+            "$ref" : "#/definitions/ValidateEntry"
+          }
+        },
+        "idExArt29" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Id univoco generato dal sistema, deve essere utilizzato per le chiamate successive"
+        },
+        "idGara" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Id univoco generato dal sistema, deve essere utilizzato per le chiamate successive"
+        }
+      },
+      "description" : "Risultato della pubblicazione"
+    },
+    "PubblicazioneResult" : {
+      "type" : "object",
+      "properties" : {
+        "error" : {
+          "type" : "string",
+          "description" : "Eventuale messaggio di errore in caso di operazione fallita"
+        },
+        "validate" : {
+          "type" : "array",
+          "description" : "Eventuale lista dei controlli di validazione che hanno generato errore",
+          "items" : {
+            "$ref" : "#/definitions/ValidateEntry"
+          }
+        },
+        "id" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Id univoco generato dal sistema, deve essere utilizzato per le chiamate successive"
+        }
+      },
+      "description" : "Risultato della pubblicazione"
+    },
+    "TipoAttoEntry" : {
+      "type" : "object",
+      "properties" : {
+        "id" : {
+          "type" : "integer",
+          "format" : "int64",
+          "description" : "Codice della configurazione"
+        },
+        "nome" : {
+          "type" : "string",
+          "description" : "Nome della pubblicazione"
+        },
+        "clausolaWhere" : {
+          "type" : "string",
+          "description" : "Clausola where per visualizzazione"
+        },
+        "campiVisualizzati" : {
+          "type" : "string",
+          "description" : "Campi visualizzati"
+        },
+        "campiObbligatori" : {
+          "type" : "string",
+          "description" : "Campi obbligatori"
+        },
+        "tipo" : {
+          "type" : "string",
+          "description" : "Flag bando/esito"
+        }
+      },
+      "description" : "Contenitore per i dati di configurazione di una pubblicazione"
+    },
+    "TipoAttoResult" : {
+      "type" : "object",
+      "properties" : {
+        "tipologie" : {
+          "type" : "array",
+          "description" : "Lista delle tipologie di atti",
+          "items" : {
+            "$ref" : "#/definitions/TipoAttoEntry"
+          }
+        },
+        "error" : {
+          "type" : "string",
+          "description" : "Eventuale messaggio di errore in caso di operazione fallita"
+        }
+      },
+      "description" : "Contenitore per i dati di configurazione di tutti gli atti"
+    },
+    "ValidateEntry" : {
+      "type" : "object",
+      "properties" : {
+        "nome" : {
+          "type" : "string",
+          "description" : "Nome campo validato"
+        },
+        "messaggio" : {
+          "type" : "string",
+          "description" : "Messaggio di errore"
+        },
+        "tipo" : {
+          "type" : "string",
+          "description" : "Tipo di messaggio, 'E' = errore bloccante, 'W' = avviso"
+        }
+      },
+      "description" : "Errore di validazione"
+    }
+  }
+}
