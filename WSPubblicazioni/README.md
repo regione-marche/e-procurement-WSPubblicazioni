@@ -1,0 +1,2 @@
+Per la build del progetto è necessario posizionarsi sulla cartella in cui risiede questo file e lanciare il comando mvn clean package.
+L'artefatto sarà reperibile al path e-procurement-WSPubblicazioni\WSPubblicazioni\target
