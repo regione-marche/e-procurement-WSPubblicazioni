@@ -187,7 +187,7 @@
         <dependency>
             <groupId>it.maggioli.eldasoft</groupId>
             <artifactId>WSDatiTabelleContesto</artifactId>
-            <version>5.5.0</version>
+            <version>5.6.0</version>
 		</dependency>
 	</dependencies>
   
@@ -315,7 +315,7 @@
                  	<dependency>
 			            <groupId>it.maggioli.eldasoft</groupId>
 			            <artifactId>WSDatiTabelleContesto</artifactId>
-			            <version>1.0.0</version>
+			            <version>5.6.0</version>
 			            <exclusions>
 			            	<exclusion>  <!-- declare the exclusion here -->
 					          <groupId>org.apache.logging.log4j</groupId>
