@@ -45,6 +45,9 @@ public class AvvisiManager {
 	@Autowired
 	private TecniciMapper tecniciMapper;
 	
+	@Autowired
+	private WGenChiaviManager wgenChiaviManager;
+	
 	/**
 	 * @param avvisiMapper
 	 *            avvisiMapper da settare internamente alla classe.
@@ -67,6 +70,14 @@ public class AvvisiManager {
 	 */
 	public void setTecniciMapper(TecniciMapper tecniciMapper) {
 		this.tecniciMapper = tecniciMapper;
+	}
+	
+	/**
+	 * @param wgenChiaviManager
+	 * 			wgenChiaviManager da settare internamente alla classe.
+	 */
+	public void setWGenChiaviManager(WGenChiaviManager wgenChiaviManager) {
+		this.wgenChiaviManager = wgenChiaviManager;
 	}
 	
 	@Transactional(isolation = Isolation.READ_COMMITTED)
@@ -277,20 +288,10 @@ public class AvvisiManager {
 	 */
 	private Long insertInboxOutbox(FlussoEntry flusso, String modalitaInvio, String codiceUnitaOrganizzativa) throws Exception{
 		//Inserimento pubblicazione in W9Inbox
-		Long idComun = this.getNextId("W9INBOX");
-		//Integer i = this.sqlMapper.execute("SELECT chiave FROM W_GENCHIAVI WHERE TABELLA='W9INBOX'");
-		//Long idComun = new Long(1);
-	    //if (i != null) {
-	    //	idComun = new Long(i) + 1;
-	    //}
-	    //this.sqlMapper.execute("UPDATE W_GENCHIAVI SET CHIAVE=CHIAVE+1 WHERE TABELLA='W9INBOX'");
+		Long idComun = this.wgenChiaviManager.getNextId("W9INBOX");
 	    this.sqlMapper.insertInbox(idComun, new Date(), new Long(2), flusso.getJson());
 	    if (modalitaInvio.equals("2")) {
-	    	Integer i = this.sqlMapper.execute("SELECT MAX(IDCOMUN) FROM W9OUTBOX");
-		    Long idComunOut = new Long(1);
-		    if (i != null) {
-		    	idComunOut = new Long(i) + 1;
-		    }
+	    	Long idComunOut = this.wgenChiaviManager.getNextId("W9OUTBOX");
 		    this.sqlMapper.insertOutbox(idComunOut, flusso.getArea(), flusso.getKey01(), flusso.getKey02(), flusso.getKey03(), flusso.getKey04(), new Long(1), flusso.getCodiceFiscaleSA(), codiceUnitaOrganizzativa);
 	    }
 	    return idComun;

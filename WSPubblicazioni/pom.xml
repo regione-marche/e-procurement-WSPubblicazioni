@@ -11,11 +11,10 @@
 	<groupId>it.maggioli.eldasoft.scp</groupId>
     <artifactId>WSPubblicazioni</artifactId>
     <packaging>war</packaging>
-    <version>5.7.0</version>
+    <version>5.9.0</version>
     <name>WSPubblicazioni</name>
 	<description>Servizio di pubblicazione atti e documenti ex. art 29 ed ex. 73 del DLgs 50/2016</description>
 
-    
     <dependencies>
 		<dependency>
             <groupId>javax.xml.bind</groupId>

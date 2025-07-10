@@ -45,6 +45,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -84,6 +85,10 @@ public class AttiManager {
   
   @Autowired
   private ImpreseMapper impreseMapper;
+  
+  @Autowired
+  private WGenChiaviManager wgenChiaviManager;
+  
   /**
    * @param attiMapper
    *        attiMapper da settare internamente alla classe.
@@ -133,15 +138,23 @@ public class AttiManager {
 		this.impreseMapper = impreseMapper;
 	}
 	
+	/**
+	 * @param wgenChiaviManager
+	 * 			wgenChiaviManager da settare internamente alla classe.
+	 */
+	public void setWGenChiaviManager(WGenChiaviManager wgenChiaviManager) {
+		this.wgenChiaviManager = wgenChiaviManager;
+	}
+	
 	@Transactional(isolation = Isolation.READ_COMMITTED)
-	private Long getNextId(String table) {
+	/*private Long getNextId(String table) {
 		this.sqlMapper.execute("UPDATE W_GENCHIAVI SET CHIAVE=CHIAVE+1 WHERE TABELLA='" + table + "'");
 		Integer i = this.sqlMapper.execute("SELECT chiave FROM W_GENCHIAVI WHERE TABELLA='" + table + "'");
 		if (i == null) {
 			i = 1;
 		}
-		return new Long(i);
-	}
+		return new Long(i.longValue());
+	}*/
 	
 	/**
 	 * @return in aggiornamento non verranno sovrascritti dati di anagrafica gara e lotto già modificati in SITATSA
@@ -297,10 +310,8 @@ public class AttiManager {
 								Integer idGenerato = this.sqlMapper.execute("SELECT ID_GENERATO FROM W9GARA WHERE CODGARA =" + codgara);
 								if (idGenerato == null) {
 									//genero id_ricevuto
-									Long idRicevuto = this.getNextId("W9PUBBLICAZIONI_GEN");
-									//Integer i = this.sqlMapper.execute("SELECT chiave FROM W_GENCHIAVI WHERE TABELLA='W9PUBBLICAZIONI_GEN'");
+									Long idRicevuto = this.wgenChiaviManager.getNextId("W9PUBBLICAZIONI_GEN");
 									pubblicazione.getGara().setIdRicevuto(idRicevuto);
-									//this.sqlMapper.execute("UPDATE W_GENCHIAVI SET CHIAVE=CHIAVE+1 WHERE TABELLA='W9PUBBLICAZIONI_GEN'");
 									this.sqlMapper.execute("UPDATE W9GARA SET ID_GENERATO=" + idRicevuto + ", ID_CLIENT='" + pubblicazione.getClientId() + "' WHERE CODGARA=" + codgara);
 									logger.info("PubblicaAtti Associazione ID_RICEVUTO = " + idRicevuto + " a GARA = "+ codgara + " già esistente");
 									break;
@@ -314,16 +325,8 @@ public class AttiManager {
 		
 		if (pubblicazione.getGara().getIdRicevuto() == null) {
 			//inserisco una nuova gara
-			//ricavo l'id della gara
-			/*Integer i = this.sqlMapper.execute("SELECT MAX(CODGARA) FROM W9GARA");
-			Long id = new Long(1);
-			if (i != null) {
-				id = new Long(i) + 1;
-			}*/
-			//pubblicazione.getGara().setId(id);
-			//pubblicazione.setIdGara(id);
 			//ricavo l'id univoco della pubblicazione
-			Long idRicevuto = this.getNextId("W9PUBBLICAZIONI_GEN");
+			Long idRicevuto = this.wgenChiaviManager.getNextId("W9PUBBLICAZIONI_GEN");
 			risultato.setIdGara(idRicevuto);
 			Long id = this.insertGara(pubblicazione.getGara(), idRicevuto);
 			pubblicazione.setIdGara(id);
@@ -357,11 +360,9 @@ public class AttiManager {
 		    }
 			pubblicazione.setNumeroPubblicazione(numeroPubblicazione);
 			//ricavo l'id univoco della pubblicazione
-			Long idRicevuto = this.getNextId("W9PUBBLICAZIONI_GEN");
-			//i = this.sqlMapper.execute("SELECT chiave FROM W_GENCHIAVI WHERE TABELLA='W9PUBBLICAZIONI_GEN'");
+			Long idRicevuto = this.wgenChiaviManager.getNextId("W9PUBBLICAZIONI_GEN");
 			risultato.setIdExArt29(idRicevuto);
 			pubblicazione.setIdRicevuto(idRicevuto);
-			//this.sqlMapper.execute("UPDATE W_GENCHIAVI SET CHIAVE=CHIAVE+1 WHERE TABELLA='W9PUBBLICAZIONI_GEN'");
 			this.attiMapper.pubblicaAtto(pubblicazione);
 		} else {
 			tipoInvio = new Long(2);
@@ -522,13 +523,7 @@ public class AttiManager {
 		//inserisco flusso
 		FlussoEntry flusso = new FlussoEntry();
 		if (tipoInstallazione().equals(new Long(3))) {
-			Long idFlusso = this.getNextId("W9FLUSSI");
-			//Integer i = this.sqlMapper.execute("SELECT chiave FROM W_GENCHIAVI WHERE TABELLA='W9FLUSSI'");
-			//Long idFlusso = new Long(1);
-		    //if (i != null) {
-		    //	idFlusso = new Long(i) + 1;
-		    //}
-		    //this.sqlMapper.execute("UPDATE W_GENCHIAVI SET CHIAVE=CHIAVE+1 WHERE TABELLA='W9FLUSSI'");
+			Long idFlusso = this.wgenChiaviManager.getNextId("W9FLUSSI");
 		    flusso.setId(idFlusso);
 		}
 	    flusso.setArea(new Long(2));
@@ -561,15 +556,11 @@ public class AttiManager {
 
   	@Transactional(isolation = Isolation.READ_COMMITTED)
 	private Long insertGara(PubblicaGaraEntry gara, Long idRicevuto) {
-  		Integer i = this.sqlMapper.execute("SELECT MAX(CODGARA) FROM W9GARA");
-		Long id = new Long(1);
-		if (i != null) {
-			id = new Long(i) + 1;
-		}
-		gara.setId(id);
+		long codgara = this.wgenChiaviManager.getNextId("W9GARA");
+		gara.setId(codgara);
 		gara.setIdRicevuto(idRicevuto);
 		this.attiMapper.pubblicaGara(gara);
-		return id;
+		return codgara;
 	}
   	
 	public void AggiornaNumeroLotti(Long codgara){
@@ -678,10 +669,8 @@ public class AttiManager {
 								Integer idGenerato = this.sqlMapper.execute("SELECT ID_GENERATO FROM W9GARA WHERE CODGARA =" + codgara);
 								if (idGenerato == null) {
 									//genero id_ricevuto
-									Long idRicevuto = this.getNextId("W9PUBBLICAZIONI_GEN");
-									//Integer i = this.sqlMapper.execute("SELECT chiave FROM W_GENCHIAVI WHERE TABELLA='W9PUBBLICAZIONI_GEN'");
+									Long idRicevuto = this.wgenChiaviManager.getNextId("W9PUBBLICAZIONI_GEN");
 									gara.setIdRicevuto(idRicevuto);
-									//this.sqlMapper.execute("UPDATE W_GENCHIAVI SET CHIAVE=CHIAVE+1 WHERE TABELLA='W9PUBBLICAZIONI_GEN'");
 									this.sqlMapper.execute("UPDATE W9GARA SET ID_GENERATO=" + idRicevuto + ", ID_CLIENT='" + gara.getClientId() + "' WHERE CODGARA=" + codgara);
 									logger.info("AnagraficaGaraLotti Associazione ID_RICEVUTO = " + idRicevuto + " a GARA = "+ codgara + " già esistente");
 									break;
@@ -697,10 +686,7 @@ public class AttiManager {
 			//inserisco una nuova gara
 			//ricavo l'id della gara
 			//ricavo l'id univoco della pubblicazione
-			//Long idRicevuto = this.getNextId("W9PUBBLICAZIONI_GEN");
-			//i = this.sqlMapper.execute("SELECT chiave FROM W_GENCHIAVI WHERE TABELLA='W9PUBBLICAZIONI_GEN'");
-			//this.sqlMapper.execute("UPDATE W_GENCHIAVI SET CHIAVE=CHIAVE+1 WHERE TABELLA='W9PUBBLICAZIONI_GEN'");
-			Long idRicevuto = this.getNextId("W9PUBBLICAZIONI_GEN");
+			Long idRicevuto = this.wgenChiaviManager.getNextId("W9PUBBLICAZIONI_GEN");
 			risultato.setId(idRicevuto);
 			this.insertGara(gara, idRicevuto);
 		} else {
@@ -820,13 +806,7 @@ public class AttiManager {
 		//inserisco flusso
 		FlussoEntry flusso = new FlussoEntry();
 		if (tipoInstallazione().equals(new Long(3))) {
-			Long idFlusso = this.getNextId("W9FLUSSI");
-			//Integer i = this.sqlMapper.execute("SELECT chiave FROM W_GENCHIAVI WHERE TABELLA='W9FLUSSI'");
-			//Long idFlusso = new Long(1);
-		    //if (i != null) {
-		    //	idFlusso = new Long(i) + 1;
-		    //}
-		    //this.sqlMapper.execute("UPDATE W_GENCHIAVI SET CHIAVE=CHIAVE+1 WHERE TABELLA='W9FLUSSI'");
+			Long idFlusso = this.wgenChiaviManager.getNextId("W9FLUSSI");
 		    flusso.setId(idFlusso);
 		}
 	    flusso.setArea(new Long(2));
@@ -964,20 +944,11 @@ public class AttiManager {
 	 */
 	private Long insertInboxOutbox(FlussoEntry flusso, String modalitaInvio, String codiceUnitaOrganizzativa) throws Exception{
 		//Inserimento pubblicazione in W9Inbox
-		Long idComun = this.getNextId("W9INBOX");
-		//Integer i = this.sqlMapper.execute("SELECT chiave FROM W_GENCHIAVI WHERE TABELLA='W9INBOX'");
-		//Long idComun = new Long(1);
-	    //if (i != null) {
-	    //	idComun = new Long(i) + 1;
-	    //}
-	    //this.sqlMapper.execute("UPDATE W_GENCHIAVI SET CHIAVE=CHIAVE+1 WHERE TABELLA='W9INBOX'");
+		Long idComun = this.wgenChiaviManager.getNextId("W9INBOX");
 	    this.sqlMapper.insertInbox(idComun, new Date(), new Long(2), flusso.getJson());
+
 	    if (modalitaInvio.equals("2") && !flusso.getKey03().equals(new Long(988))) {
-	    	Integer i = this.sqlMapper.execute("SELECT MAX(IDCOMUN) FROM W9OUTBOX");
-	    	Long idComunOut = new Long(1);
-		    if (i != null) {
-		    	idComunOut = new Long(i) + 1;
-		    }
+	    	Long idComunOut = this.wgenChiaviManager.getNextId("W9OUTBOX");
 		    this.sqlMapper.insertOutbox(idComunOut, flusso.getArea(), flusso.getKey01(), flusso.getKey02(), flusso.getKey03(), flusso.getKey04(), new Long(1), flusso.getCodiceFiscaleSA(), codiceUnitaOrganizzativa);
 	    }
 	    return idComun;

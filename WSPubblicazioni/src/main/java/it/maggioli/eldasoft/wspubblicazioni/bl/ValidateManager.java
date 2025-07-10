@@ -226,10 +226,10 @@ public class ValidateManager {
 			} else {
 				i = sqlMapper.count("UFFINT WHERE CFEIN='" + avviso.getCodiceFiscaleSA() + "' and (CODEIN_UO is null or CODEIN_UO='')");
 			}
-			if (i == 0){
+			if (i == 0) {
 				ValidateEntry item = new ValidateEntry("codiceFiscaleSA", "La stazione appaltante indicata non esiste nell'archivio di destinazione");
 				controlli.add(item);
-			} else if (i > 1){
+			} else if (i > 1) {
 				ValidateEntry item = new ValidateEntry("codiceFiscaleSA", "Esistono piu' stazioni appaltanti con lo stesso codice fiscale e codice unita' organizzativa. Contattare l'amministratore");
 				controlli.add(item);
 			} else {
@@ -1423,6 +1423,41 @@ public class ValidateManager {
 									gara.setIdAnac("0");
 								}
 							}
+						}
+					}
+					break;
+				case 42:
+					//Controllo univocit? ID ANAC sulla stessa stazione appaltante
+					if (gara.getIdAnac() != null && !gara.getIdAnac().equals("0")) {
+						String codiceSA = this.sqlMapper.executeReturnString("SELECT MAX(CODEIN) FROM UFFINT WHERE CFEIN='" + gara.getCodiceFiscaleSA() + "'");
+						/*String codiceSA = "";
+						if (gara.getCodiceUnitaOrganizzativa() != null) {
+							codiceSA = this.sqlMapper.executeReturnString("SELECT MAX(CODEIN) FROM UFFINT WHERE CFEIN='" + gara.getCodiceFiscaleSA() + "' and CODEIN_UO='" + gara.getCodiceUnitaOrganizzativa() + "'");
+						} else {
+							codiceSA = this.sqlMapper.executeReturnString("SELECT MAX(CODEIN) FROM UFFINT WHERE CFEIN='" + gara.getCodiceFiscaleSA() + "' and (CODEIN_UO is null or CODEIN_UO='')");
+						}*/
+						Integer i = null;
+						if (gara.getIdRicevuto() == null) {
+							i = this.sqlMapper.execute("SELECT COUNT(*) FROM W9GARA WHERE IDAVGARA='" + gara.getIdAnac().replace("'", "''") + "' AND CODEIN='" + codiceSA + "'");
+						} else {
+							i = this.sqlMapper.execute("SELECT COUNT(*) FROM W9GARA WHERE IDAVGARA='" + gara.getIdAnac().replace("'", "''") + "' AND CODEIN='" + codiceSA + "' AND ID_GENERATO<>" + gara.getIdRicevuto());
+						}
+						if (i>0) {
+							condizioneVerificata = true;
+						}
+					}
+					break;
+				case 43:
+					//Controllo univocita' ID ANAC sull'intera banca dati
+					if (gara.getIdAnac() != null && !gara.getIdAnac().equals("0")) {
+						Integer i = null;
+						if (gara.getIdRicevuto() == null) {
+							i = this.sqlMapper.execute("SELECT COUNT(*) FROM W9GARA WHERE IDAVGARA='" + gara.getIdAnac().replace("'", "''") + "'");
+						} else {
+							i = this.sqlMapper.execute("SELECT COUNT(*) FROM W9GARA WHERE IDAVGARA='" + gara.getIdAnac().replace("'", "''") + "' AND ID_GENERATO<>" + gara.getIdRicevuto());
+						}
+						if (i>0) {
+							condizioneVerificata = true;
 						}
 					}
 					break;
